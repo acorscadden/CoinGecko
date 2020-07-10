@@ -41,7 +41,7 @@ enum CoinGeckoError: Error {
     case general
 }
 
-class ApiClient {
+public class ApiClient {
     
     private let baseURL = "https://api.coingecko.com/api/v3"
     
