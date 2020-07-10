@@ -10,11 +10,11 @@ import Foundation
 typealias SupportedList = [String]
 typealias CoinList = [Coin]
 
-struct Pong: Codable {
+public struct Pong: Codable {
     let gecko_says: String
 }
 
-struct Coin: Codable {
+public struct Coin: Codable {
     let id: String
     let symbol: String
     let name: String

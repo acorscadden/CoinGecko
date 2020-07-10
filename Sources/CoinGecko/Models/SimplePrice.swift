@@ -9,7 +9,7 @@ import Foundation
 
 typealias PriceList = [SimplePrice]
 
-struct SimplePrice: Codable {
+public struct SimplePrice: Codable {
     let id: String
     let price: Double
     let marketCap: Double?
@@ -33,7 +33,7 @@ struct SimplePrice: Codable {
     }
 }
 
-enum SimplePriceOptions: CaseIterable {
+public enum SimplePriceOptions: CaseIterable {
     case marketCap
     case vol
     case change

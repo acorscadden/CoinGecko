@@ -7,18 +7,18 @@
 
 import Foundation
 
-typealias Callback<T> = (Result<T, CoinGeckoError>) -> Void
+public typealias Callback<T> = (Result<T, CoinGeckoError>) -> Void
 
-struct Resource<T: Codable> {
+public struct Resource<T: Codable> {
     
-    let endpoint: Endpoint
-    let method: Method
-    let pathParam: String?
-    let params: [URLQueryItem]?
-    let parse: ((Data) -> T)? //optional parse function if Data isn't directly decodable to T
-    let completion: (Result<T, CoinGeckoError>) -> Void //called on main thread
+    fileprivate let endpoint: Endpoint
+    fileprivate let method: Method
+    fileprivate let pathParam: String?
+    fileprivate let params: [URLQueryItem]?
+    fileprivate let parse: ((Data) -> T)? //optional parse function if Data isn't directly decodable to T
+    fileprivate let completion: (Result<T, CoinGeckoError>) -> Void //called on main thread
     
-    init(_ endpoint: Endpoint,
+    public init(_ endpoint: Endpoint,
          method: Method,
          pathParam: String? = nil,
          params: [URLQueryItem]? = nil,
@@ -33,21 +33,21 @@ struct Resource<T: Codable> {
     }
 }
 
-enum Method: String {
+public enum Method: String {
     case GET
 }
 
-enum CoinGeckoError: Error {
+public enum CoinGeckoError: Error {
     case general
 }
 
-class ApiClient {
+public class ApiClient {
         
     public init() {}
     
     private let baseURL = "https://api.coingecko.com/api/v3"
     
-    func load<T: Codable>(_ resource: Resource<T>) {
+    public func load<T: Codable>(_ resource: Resource<T>) {
         let completion = resource.completion
         var path = resource.endpoint.rawValue
         path = resource.pathParam == nil ? path : String(format: path, resource.pathParam!)

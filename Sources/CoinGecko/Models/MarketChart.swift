@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MarketChart: Codable {
+public struct MarketChart: Codable {
     let prices: [[Double]]
 }
 
@@ -20,7 +20,7 @@ extension MarketChart {
     }
 }
 
-struct PriceDataPoint: Codable {
+public struct PriceDataPoint: Codable {
     let timestamp: Int
     let price: Double
 }
