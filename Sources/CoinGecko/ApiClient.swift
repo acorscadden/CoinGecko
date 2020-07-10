@@ -62,7 +62,6 @@ public class ApiClient {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else { completion(.failure(.general)); return }
-            print(String(data: data, encoding: .utf8)!)
             do {
                 var result: T
                 if let parse = resource.parse {
