@@ -8,11 +8,11 @@
 import Foundation
 
 public struct MarketChart: Codable {
-    let prices: [[Double]]
+    public let prices: [[Double]]
 }
 
 extension MarketChart {
-    var dataPoints: [PriceDataPoint] {
+    public var dataPoints: [PriceDataPoint] {
         prices.compactMap {
             guard $0.count == 2 else { return nil }
             return PriceDataPoint(timestamp: Int($0[0]), price: $0[1])
@@ -21,6 +21,6 @@ extension MarketChart {
 }
 
 public struct PriceDataPoint: Codable {
-    let timestamp: Int
-    let price: Double
+    public let timestamp: Int
+    public let price: Double
 }
