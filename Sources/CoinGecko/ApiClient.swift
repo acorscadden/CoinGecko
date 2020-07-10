@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ApiClient.swift
 //  
 //
 //  Created by Adrian Corscadden on 2020-07-03.
@@ -13,17 +13,20 @@ struct Resource<T: Codable> {
     
     let endpoint: Endpoint
     let method: Method
+    let pathParam: String?
     let params: [URLQueryItem]?
     let parse: ((Data) -> T)? //optional parse function if Data isn't directly decodable to T
     let completion: (Result<T, CoinGeckoError>) -> Void //called on main thread
     
     init(_ endpoint: Endpoint,
          method: Method,
+         pathParam: String? = nil,
          params: [URLQueryItem]? = nil,
          parse: ((Data) -> T)? = nil,
          completion: @escaping (Result<T, CoinGeckoError>) -> Void) {
         self.endpoint = endpoint
         self.method = method
+        self.pathParam = pathParam
         self.params = params
         self.parse = parse
         self.completion = completion
@@ -32,13 +35,6 @@ struct Resource<T: Codable> {
 
 enum Method: String {
     case GET
-}
-
-enum Endpoint: String {
-    case ping = "/ping"
-    case supportedVs = "/simple/supported_vs_currencies"
-    case simplePrice = "/simple/price"
-    case coinsList = "/coins/list"
 }
 
 enum CoinGeckoError: Error {
@@ -51,14 +47,17 @@ class ApiClient {
     
     func load<T: Codable>(_ resource: Resource<T>) {
         let completion = resource.completion
-        var url = URL(string: "\(baseURL)\(resource.endpoint.rawValue)")!
+        var path = resource.endpoint.rawValue
+        path = resource.pathParam == nil ? path : String(format: path, resource.pathParam!)
+        var url = URL(string: "\(baseURL)\(path)")!
         if let params = resource.params {
             var comps = URLComponents(url: url, resolvingAgainstBaseURL: true)!
             comps.queryItems = comps.queryItems ?? []
             comps.queryItems!.append(contentsOf: params)
             url = comps.url!
         }
-        let request = URLRequest(url: url)
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else { completion(.failure(.general)); return }
             print(String(data: data, encoding: .utf8)!)
