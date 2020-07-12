@@ -7,15 +7,15 @@
 
 import Foundation
 
-typealias PriceList = [SimplePrice]
+public typealias PriceList = [SimplePrice]
 
 public struct SimplePrice: Codable {
-    let id: String
-    let price: Double
-    let marketCap: Double?
-    let vol24hr: Double?
-    let change24hr: Double?
-    let lastUpdatedAt: Int?
+    public let id: String
+    public let price: Double
+    public let marketCap: Double?
+    public let vol24hr: Double?
+    public let change24hr: Double?
+    public let lastUpdatedAt: Int?
     
     init?(json: [String: Any], id: String, prefix: String) {
         
