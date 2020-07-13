@@ -41,7 +41,7 @@ public enum CoinGeckoError: Error {
     case general
 }
 
-public class ApiClient {
+public class CoinGeckoClient {
         
     public init() {}
     

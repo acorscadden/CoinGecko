@@ -3,7 +3,7 @@ import XCTest
 
 final class SimpleTests: XCTestCase {
 
-    private let client = ApiClient()
+    private let client = CoinGeckoClient()
 
     func testIncludeAll() {
         let exp = XCTestExpectation()
