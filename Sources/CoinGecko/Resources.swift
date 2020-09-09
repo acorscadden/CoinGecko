@@ -15,6 +15,7 @@ public enum Endpoint: String {
     
     case coinsList = "/coins/list"
     case coinsMarketChart = "/coins/%@/market_chart"
+    case coin = "/coins/%@"
 }
 
 public enum Resources {}
@@ -60,6 +61,17 @@ extension Resources {
 
 // MARK: - Coins
 extension Resources {
+    
+    public static func coin<CoinResponse>(currencyId: String, vs: String,
+                               _ callback: @escaping (Result<CoinResponse, CoinGeckoError>) -> Void) -> Resource<CoinResponse>{
+        let params = [URLQueryItem(name: "market_data", value: "true"),
+                      URLQueryItem(name: "localization", value: "false"),
+                      URLQueryItem(name: "tickers", value: "false"),
+                      URLQueryItem(name: "community_data", value: "false"),
+                      URLQueryItem(name: "developer_data", value: "false")]
+        return Resource(.coin, method: .GET, pathParam: currencyId, params: params, customKey: vs, completion: callback)
+    }
+    
     public static func coins<CoinList>(_ callback: @escaping Callback<CoinList>) -> Resource<CoinList> {
         return Resource(.coinsList, method: .GET, completion: callback)
     }

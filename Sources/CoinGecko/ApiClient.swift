@@ -9,6 +9,8 @@ import Foundation
 
 public typealias Callback<T> = (Result<T, CoinGeckoError>) -> Void
 
+let CustomKeyUserInfoKey = CodingUserInfoKey(rawValue: "customKey")!
+
 public struct Resource<T: Codable> {
     
     fileprivate let endpoint: Endpoint
@@ -16,6 +18,7 @@ public struct Resource<T: Codable> {
     fileprivate let pathParam: String?
     fileprivate let params: [URLQueryItem]?
     fileprivate let parse: ((Data) -> T)? //optional parse function if Data isn't directly decodable to T
+    fileprivate let customKey: String?
     fileprivate let completion: (Result<T, CoinGeckoError>) -> Void //called on main thread
     
     public init(_ endpoint: Endpoint,
@@ -23,12 +26,14 @@ public struct Resource<T: Codable> {
          pathParam: String? = nil,
          params: [URLQueryItem]? = nil,
          parse: ((Data) -> T)? = nil,
+         customKey: String? = nil,
          completion: @escaping (Result<T, CoinGeckoError>) -> Void) {
         self.endpoint = endpoint
         self.method = method
         self.pathParam = pathParam
         self.params = params
         self.parse = parse
+        self.customKey = customKey
         self.completion = completion
     }
 }
@@ -39,6 +44,8 @@ public enum Method: String {
 
 public enum CoinGeckoError: Error {
     case general
+    case noData
+    case jsonDecoding
 }
 
 public class CoinGeckoClient {
@@ -61,18 +68,23 @@ public class CoinGeckoClient {
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data else { completion(.failure(.general)); return }
+            guard let data = data else { completion(.failure(.noData)); return }
             do {
                 var result: T
                 if let parse = resource.parse {
                     result = parse(data)
                 } else {
-                   result = try JSONDecoder().decode(T.self, from: data)
+                    let decoder = JSONDecoder()
+                    if let customKey = resource.customKey {
+                        decoder.userInfo = [CustomKeyUserInfoKey: customKey]
+                    }
+                    result = try decoder.decode(T.self, from: data)
                 }
                 DispatchQueue.main.async {
                     completion(.success(result))
                 }
-            } catch _ {
+            } catch let e {
+                print("JSON parsing error: \(e)")
                 DispatchQueue.main.async {
                     completion(.failure(.general))
                 }
